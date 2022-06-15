@@ -1,0 +1,278 @@
+{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+{{ 'nouislider.css' | asset_url | stylesheet_tag }}
+
+
+<style>
+  #app {
+	 margin: 40vh auto;
+	 max-width: 400px;
+	 color: #444;
+}
+ .range-slider {
+	 width: 240px;
+	 padding: 1em;
+	 background: rgba(238, 238, 238, 0.7);
+	 border-radius: 7px;
+	 box-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+}
+ .values-group {
+	 display: flex;
+	 justify-content: center;
+	 margin: 0 auto;
+	 margin-bottom: 0.7em;
+	 font-family: Calibri, Arial;
+	 font-size: 18px;
+}
+ .value {
+	 font-size: 14px;
+	 width: 3em;
+	 border: 1px solid #999;
+	 text-align: center;
+}
+ .value:focus {
+	 outline: none;
+	 border-color: yellowgreen;
+	 box-shadow: 0 0 2px yellowgreen;
+}
+ .track {
+	 position: relative;
+	 width: inherit;
+	 height: 2px;
+	 background: #444;
+}
+ .thumb {
+     display: flex !important;
+	 position: absolute;
+	 top: 0;
+	 left: 0;
+	 cursor: ew-resize;
+}
+ .thumb::after {
+	 position: absolute;
+	 content: "";
+	 border-style: solid;
+	 border-width: 15px;
+	 border-left-width: 10px;
+	 border-right-width: 10px;
+}
+ .thumb-min::after {
+	 border-top: none;
+	 border-color: transparent transparent yellowgreen transparent;
+	 transform: translate(-50%, 2px);
+}
+ .thumb-max::after {
+	 border-bottom: none;
+	 border-color: yellowgreen transparent transparent transparent;
+	 transform: translate(-50%, -100%);
+}
+ .selection {
+	 position: absolute;
+	 width: unset;
+	 height: 2px;
+	 background: tomato;
+	 box-shadow: 0 0 10px rgba(255, 99, 71, 0.5);
+}
+ .text {
+	 display: initial;
+	 margin-bottom: 0.5em;
+}
+ .thumb-max.active::after {
+	 border-color: tomato transparent transparent transparent;
+}
+ .thumb-min.active::after {
+	 border-color: transparent transparent tomato transparent;
+}
+ .hide {
+	 display: none;
+}
+
+  .noUi-horizontal {
+      height: 4px;
+  }
+  
+  .noUi-horizontal .noUi-connect {
+      display: flex !important;
+      background: #000;
+  }
+
+  .noUi-target {
+      display: flex !important;
+      border-radius: 0;
+      border: none;
+      background: #999;
+      box-shadow: none;
+  }
+
+  .noUi-horizontal .noUi-handle {
+      top: -8px;
+      display: flex !important;
+      width: 20px;
+      height: 20px;
+      background-color: #000;
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+  }
+
+  .noUi-horizontal  .noUi-handle::before {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 8px;
+      height: 8px;
+      background-color: #fff;
+  }
+
+  .noUi-horizontal  .noUi-handle::after {
+      display: none;
+  }
+  .wrapper {
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  .m-b-50 {
+      margin-bottom: 50px;
+  }
+
+  .m-b-20 {
+      margin-bottom: 20px;
+  }
+  .m-t-50 {
+      margin-top: 50px;
+  }
+
+  .p-l-r{
+      padding: 0 30px;
+  }
+  /* -------------------------------------------------------------------------
+     begin Style-3
+   * ------------------------------------------------------------------------- */
+  .tooltipdiv {
+      display: block;
+      position: absolute;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 1px solid #D9D9D9;
+      border-radius: 3px;
+      background: #fff;
+      color: #000;
+      padding: 5px;
+      text-align: center;
+      white-space: nowrap;
+  }
+
+  .noUi-value{
+      margin-top: 10px;
+  }
+  /* -------------------------------------------------------------------------
+     end Style-3
+   * ------------------------------------------------------------------------- */
+
+</style>
+
+<div class="contact page-width page-width--narrow spaced-section">
+  <h2 class="title">{{ section.settings.heading | escape }}</h2>
+  {%- form 'contact', id: 'ContactForm' -%}
+    {%- if form.posted_successfully? -%}
+      <div class="form-status form-status-list form__message" tabindex="-1" autofocus>{% render 'icon-success' %} {{ 'templates.contact.form.post_success' | t }}</div>
+    {%- elsif form.errors -%}
+      <div class="form__message">
+        <h2 class="form-status caption-large" role="alert" tabindex="-1" autofocus>{% render 'icon-error' %} {{ 'templates.contact.form.error_heading' | t }}</h2>
+      </div>
+      <ul class="form-status-list caption-large" role="list">
+        <li>
+          <a href="#ContactForm-email" class="link">
+            {{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}
+          </a>
+        </li>
+      </ul>
+    {%- endif -%}
+    <div class="contact__fields">
+      <div class="field">
+        <input class="field__input" autocomplete="name" type="text" id="ContactForm-name" name="contact[{{ 'templates.contact.form.name' | t }}]" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" placeholder="{{ 'templates.contact.form.name' | t }}">
+        <label class="field__label" for="ContactForm-name">{{ 'templates.contact.form.name' | t }}</label>
+      </div>
+      <div class="field field--with-error">
+        <input
+          autocomplete="email"
+          type="email"
+          id="ContactForm-email"
+          class="field__input"
+          name="contact[email]"
+          spellcheck="false"
+          autocapitalize="off"
+          value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+          aria-required="true"
+          {% if form.errors contains 'email' %}
+            aria-invalid="true"
+            aria-describedby="ContactForm-email-error"
+          {% endif %}
+          placeholder="{{ 'templates.contact.form.email' | t }}"
+        >
+        <label class="field__label" for="ContactForm-email">{{ 'templates.contact.form.email' | t }} <span aria-hidden="true">*</span></label>
+        {%- if form.errors contains 'email' -%}
+          <small class="contact__field-error" id="ContactForm-email-error">
+            <span class="visually-hidden">{{ 'accessibility.error' | t }}</span>
+            <span class="form__message">{% render 'icon-error' %}{{ form.errors.translated_fields['email'] | capitalize }} {{ form.errors.messages['email'] }}</span>
+          </small>
+        {%- endif -%}
+      </div>
+    </div>
+    <div class="field">
+      <input type="tel" id="ContactForm-phone" class="field__input" autocomplete="tel" name="contact[{{ 'templates.contact.form.phone' | t }}]" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" placeholder="{{ 'templates.contact.form.phone' | t }}">
+      <label class="field__label" for="ContactForm-phone">{{ 'templates.contact.form.phone' | t }}</label>
+    </div>
+    <div class="field">
+      <textarea
+        rows="10"
+        id="ContactForm-body"
+        class="text-area field__input"
+        name="contact[{{ 'templates.contact.form.comment' | t }}]"
+        placeholder="{{ 'templates.contact.form.comment' | t }}"
+      >
+        {{- form.body -}}
+      </textarea>
+      <label class="form__label field__label" for="ContactForm-body">{{ 'templates.contact.form.comment' | t }}</label>
+    </div>
+    <div class="contact__button">
+      <button type="submit" class="button">
+        {{ 'templates.contact.form.send' | t }}
+      </button>
+    </div>
+  {%- endform -%}
+</div>
+
+
+<div id="app"></div>
+
+<div class="style-2 wrapper m-b-50 p-l-r">
+    <div class="slider-keypress m-b-20"></div>
+    <input type="text" id="input-format" class="input-with-keypress-0">
+    <input type="text" class="input-with-keypress-1">
+</div>
+
+<script src="{{ 'nouislider.js' | asset_url }}" defer="defer"></script>
+ <script src="{{ 'custom.js' | asset_url }}" defer="defer"></script>
+{% schema %}
+{
+  "name": "t:sections.contact-form.name",
+  "tag": "section",
+  "class": "spaced-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "default": "Contact form",
+      "label": "Heading"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact-form.presets.name"
+    }
+  ]
+}
+{% endschema %}
